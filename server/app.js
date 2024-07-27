@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var sql = require('mssql');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -26,6 +27,29 @@ const options = {
 };
 
 const openapiSpecification = swaggerJsdoc(options);
+
+
+// SQL Server setup
+const config = {
+  /*user: 'your_username', // replace with your username
+  password: 'your_password', // replace with your password
+  server: 'localhost', // use 'localhost\\SQLEXPRESS' if you have a named instance
+  database: 'your_database', // replace with your database name*/
+  server: 'localhost\\MSSQLLocalDB',
+  options: {
+    encrypt: true, // for Azure
+    trustServerCertificate: true, // change to true for local dev / self-signed certs
+    trustedConnection: true // Use Windows Authentication
+  }
+};
+
+sql.connect(config).then(pool => {
+  if (pool.connected) {
+    console.log('Connected to SQL Server');
+  }
+}).catch(err => {
+  console.error('Database connection failed: ', err);
+});
 
 app.use('/api', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
