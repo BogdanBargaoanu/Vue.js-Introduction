@@ -1,0 +1,19 @@
+1.node + vs code
+2.npx express-generator
+3.npm install swagger-ui-express
+4.npm install swagger-jsdoc
+5. // Swagger setup (app.js)
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Cashflow API',
+      version: '1.0.0',
+    },
+  },
+  apis: ['./routes/*.js'], // files containing annotations as above
+};

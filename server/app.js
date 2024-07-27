@@ -9,6 +9,26 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+// Swagger setup
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+
+const options = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Cashflow API',
+      version: '1.0.0',
+    },
+  },
+  apis: ['./routes/*.js'], // files containing annotations as above
+};
+
+const openapiSpecification = swaggerJsdoc(options);
+
+app.use('/api', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
