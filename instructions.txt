@@ -23,3 +23,5 @@ const options = {
 7. npm install boostrap@3
 
 8. main.js
+
+9. style, userlogin, npm install axios
