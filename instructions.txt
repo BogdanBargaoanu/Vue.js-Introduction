@@ -24,4 +24,6 @@ const options = {
 
 8. main.js
 
-9. style, userlogin, npm install axios
+9. style, userlogin, npm install axios, routes
+
+10. npm install cors, app js server, users endpoints
