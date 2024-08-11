@@ -19,3 +19,5 @@ const options = {
 };
 
 6. https://github.com/vuejs/create-vue
+
+7. npm install boostrap@3

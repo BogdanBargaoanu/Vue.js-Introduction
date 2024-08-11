@@ -49,33 +49,22 @@ db.connect((err) => {
       password VARCHAR(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
       PRIMARY KEY (idUsers)
     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`;
-    const createEntitiesTableQuery = `CREATE TABLE IF NOT EXISTS entities (
-      idEntities INT NOT NULL AUTO_INCREMENT,
-      name VARCHAR(100) NULL,
-      isUser TINYINT(1) NULL,
-      PRIMARY KEY (idEntities))`;
     const createCashflowLogTableQuery = `CREATE TABLE IF NOT EXISTS cashflowLog (
       idcashflowLog INT NOT NULL AUTO_INCREMENT,
       idUser INT NOT NULL,
+      idUserSelected INT NOT NULL,
       description VARCHAR(500) NULL,
-      idEntity INT NOT NULL,
       type VARCHAR(45) NULL,
       value FLOAT NOT NULL,
       currency VARCHAR(45) NOT NULL,
       date DATETIME NOT NULL,
       PRIMARY KEY (idcashflowLog),
       INDEX FK_Users_idx (idUser ASC) VISIBLE,
-      INDEX FK_Entities_idx (idEntity ASC) VISIBLE,
       CONSTRAINT FK_Users
         FOREIGN KEY (idUser)
         REFERENCES cashflowapp.users (idUsers)
         ON DELETE RESTRICT
-        ON UPDATE NO ACTION,
-      CONSTRAINT FK_Entities
-        FOREIGN KEY (idEntity)
-        REFERENCES cashflowapp.entities (idEntities)
-        ON DELETE RESTRICT
-        ON UPDATE NO ACTION)`
+        ON UPDATE NO ACTION)`;
     db.query(createUsersTableQuery, (err, result) => {
       if (err) {
         console.log(err);
@@ -84,14 +73,6 @@ db.connect((err) => {
         console.log('Users table checked/created successfully.');
       }
     });
-    db.query(createEntitiesTableQuery, (err, result) => {
-      if (err) {
-        console.log(err);
-      }
-      else {
-        console.log('Entities table checked/created successfully.');
-      }
-    })
     db.query(createCashflowLogTableQuery, (err, result) => {
       if (err) {
         console.log(err);
