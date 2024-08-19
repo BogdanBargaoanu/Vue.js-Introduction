@@ -55,7 +55,7 @@ db.connect((err) => {
       password VARCHAR(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
       PRIMARY KEY (idUsers)
     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`;
-    const createCashflowLogTableQuery = `CREATE TABLE IF NOT EXISTS cashflowLog (
+    const createLogTableQuery = `CREATE TABLE IF NOT EXISTS log (
       idcashflowLog INT NOT NULL AUTO_INCREMENT,
       idUser INT NOT NULL,
       idUserSelected INT NOT NULL,
@@ -66,7 +66,7 @@ db.connect((err) => {
       date DATETIME NOT NULL,
       PRIMARY KEY (idcashflowLog),
       INDEX FK_Users_idx (idUser ASC) VISIBLE,
-      CONSTRAINT FK_Users
+      CONSTRAINT FK_UsersLog
         FOREIGN KEY (idUser)
         REFERENCES cashflowapp.users (idUsers)
         ON DELETE RESTRICT
@@ -79,7 +79,7 @@ db.connect((err) => {
         console.log('Users table checked/created successfully.');
       }
     });
-    db.query(createCashflowLogTableQuery, (err, result) => {
+    db.query(createLogTableQuery, (err, result) => {
       if (err) {
         console.log(err);
       }
