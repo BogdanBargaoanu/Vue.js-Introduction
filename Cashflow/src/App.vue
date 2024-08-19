@@ -4,6 +4,7 @@
     <nav>
       <RouterLink to="/login"></RouterLink>
       <RouterLink to="/register"></RouterLink>
+      <RouterLink to="/dashboard"></RouterLink>
     </nav>
     <RouterView />
   </div>
