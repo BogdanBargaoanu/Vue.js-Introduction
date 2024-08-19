@@ -3,6 +3,7 @@
   <div id="app">
     <nav>
       <RouterLink to="/login"></RouterLink>
+      <RouterLink to="/register"></RouterLink>
     </nav>
     <RouterView />
   </div>
