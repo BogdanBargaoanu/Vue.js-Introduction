@@ -1,12 +1,12 @@
 <template>
-  <UserLogin msg="Login"/>
+  <UserLogin msg="Login" />
   <div id="app">
     <nav>
       <RouterLink to="/login"></RouterLink>
     </nav>
     <RouterView />
   </div>
-  
+
 </template>
 
 <script>

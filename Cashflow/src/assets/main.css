@@ -106,13 +106,13 @@ button[class="btn btn-primary"]:hover::before {
 
 @keyframes slide-up-fade-in {
   0% {
-      transform: translateY(20px);
-      opacity: 0;
+    transform: translateY(20px);
+    opacity: 0;
   }
 
   100% {
-      transform: translateY(0);
-      opacity: 1;
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 
@@ -244,6 +244,14 @@ button[class="btn btn-primary"]:hover::before {
   animation: slide-up-fade-in 1s ease;
   transition: transform 0.5s ease;
 }
+
+/*
+.accordion-collapse.collapse {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+*/
 
 /* Cashflow log styles */
 .btn-insert {
