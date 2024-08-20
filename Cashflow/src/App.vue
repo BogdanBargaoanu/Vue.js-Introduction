@@ -1,5 +1,4 @@
 <template>
-  <UserLogin msg="Login" />
   <div id="app">
     <nav>
       <RouterLink to="/login"></RouterLink>

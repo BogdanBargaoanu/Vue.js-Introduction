@@ -24,17 +24,18 @@
                     :aria-labelledby="'heading' + log.idcashflowLog" data-bs-parent="#accordionCashflow">
                     <div class="accordion-body">
 
-                        <!-- ENTITY -->
+                        <!-- USER -->
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <label class="input-group-text" :for="'entityName' + log.idcashflowLog">Name</label>
+                                <label class="input-group-text" :for="'username' + log.idcashflowLog">Name</label>
                             </div>
-                            <select :id="'entityName' + log.idcashflowLog" class="name-select form-control"
+                            <select :id="'username' + log.idcashflowLog" class="name-select form-control"
                                 aria-label="Name" aria-describedby="inputGroup-sizing-default" v-model="log.idEntity"
                                 @change="inputChanging()">
-                                <option v-for="entity in entities" :key="entity.idEntities" :value="entity.idEntities">
+                                <!--<option v-for="entity in entities" :key="entity.idEntities" :value="entity.idEntities">
                                     {{
                 entity.name }}</option>
+                                -->
                             </select>
                         </div>
 
@@ -107,16 +108,17 @@
                     </div>
                     <div class="modal-body">
 
-                        <!-- ENTITY INSERT -->
+                        <!-- USER INSERT -->
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <label class="input-group-text" for="entityNameInsert">Name</label>
+                                <label class="input-group-text" for="usernameInsert">Name</label>
                             </div>
-                            <select id="entityNameInsert" class="name-select form-control" aria-label="Name"
+                            <select id="usernameInsert" class="name-select form-control" aria-label="Name"
                                 aria-describedby="inputGroup-sizing-default" v-model="idEntityInsert">
-                                <option v-for="entity in entities" :key="entity.idEntities" :value="entity.idEntities">
+                                <!--<option v-for="entity in entities" :key="entity.idEntities" :value="entity.idEntities">
                                     {{
                 entity.name }}</option>
+                                -->
                             </select>
                         </div>
 
@@ -174,7 +176,6 @@
         </div>
     </div>
     <button @click="logout()" class="btn-logout"> <i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-    <button @click="home()" class="btn-home"><i class="fa-solid fa-house"></i> Home</button>
 
 
     <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true"
@@ -193,7 +194,7 @@
 import axios from 'axios';
 
 export default {
-    name: 'Dashboard',
+    name: 'CashFlowLog',
     data() {
         return {
             cashflowLog: [],
@@ -205,7 +206,7 @@ export default {
             showButton: false,
 
             // insert log
-            idDestinationUserInsert: 0,
+            idEntityInsert: 0,
             typeInsert: '',
             valueInsert: 0,
             currencyInsert: '',
@@ -221,8 +222,8 @@ export default {
     },
 
     created() {
-        this.getCashflow();
-        this.getUsers();
+        //this.getCashflow();
+        //this.getEntities();
     },
     methods: {
         logout() {
@@ -236,7 +237,7 @@ export default {
             this.showButton = true;
         },
         resetInsertInfo() {
-            this.idDestinationUserInsert = 0;
+            this.idEntityInsert = 0;
             this.typeInsert = '';
             this.valueInsert = 0;
             this.currencyInsert = '';
@@ -245,7 +246,7 @@ export default {
         insertCashflowLog() {
             //console.log(this.idEntityInsert, this.typeInsert, this.valueInsert, this.currencyInsert, this.dateInsert);
             const token = localStorage.getItem('user-token'); // get the token from local storage
-            if (this.idDestinationUserInsert == 0 || this.typeInsert == '' || this.valueInsert == 0 || this.currencyInsert == '' || this.dateInsert == '') {
+            if (this.idEntityInsert == 0 || this.typeInsert == '' || this.valueInsert == 0 || this.currencyInsert == '' || this.dateInsert == '') {
                 this.showToast = true;
                 this.toastMessage = 'Please fill all fields';
                 setTimeout(() => {
@@ -253,7 +254,7 @@ export default {
                 }, 5000);
             } else {
                 axios.post("http://localhost:3000/cashflowlog/insertLog", {
-                    idUserSelected: this.idDestinationUserInsert,
+                    idEntity: this.idEntityInsert,
                     type: this.typeInsert,
                     value: this.valueInsert,
                     currency: this.currencyInsert,
@@ -265,7 +266,53 @@ export default {
                         }
                     })
                     .then(response => {
-                        
+                        //----push the new log to the array a better variant
+                        for (const entity of this.entities) {
+                            if (entity.idEntities == this.idEntityInsert) {
+                                if (entity.isUser) {
+                                    console.log(1);
+                                    axios.get(`http://localhost:3000/users/${entity.name}`)
+                                        .then(response => {
+                                            console.log(response.data);
+                                            if (response.data[0].idUsers != null) {
+                                                let idEntityUser = response.data[0].idUsers;
+                                                let typeReverse;
+                                                if (this.typeInsert == 'Income') {
+                                                    typeReverse = 'Expense';
+                                                } else {
+                                                    typeReverse = 'Income';
+                                                }
+                                                console.log(idEntityUser, typeReverse, this.valueInsert, this.currencyInsert, this.dateInsert);
+                                                axios.post("http://localhost:3000/cashflowlog/insertLogTransfer", {
+                                                    type: typeReverse,
+                                                    value: this.valueInsert,
+                                                    currency: this.currencyInsert,
+                                                    date: this.dateInsert,
+                                                    idUser: idEntityUser,
+                                                },
+                                                    {
+                                                        headers: {
+                                                            Authorization: `Bearer ${token}` // send the token in the Authorization header
+                                                        }
+                                                    })
+                                                    .then(response => {
+                                                        if (response.data.success) {
+                                                            console.log('Transfer recorded successfully for the selected user!');
+                                                        }
+                                                    })
+                                                    .catch(error => {
+                                                        console.error(error);
+                                                    });
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error(error);
+                                        });
+                                }
+                                break;
+                            }
+                        }
+
                         if (response.data.success) {
                             this.showToast = true;
                             this.toastMessage = 'Log inserted successfully';
@@ -290,7 +337,7 @@ export default {
             const token = localStorage.getItem('user-token'); // get the token from local storage
             console.log(JSON.stringify(log));
             axios.post(`http://localhost:3000/cashflowlog/updateLog/${log.idcashflowLog}`, {
-                idUserSelected: log.idUserSelected,
+                idEntity: log.idEntity,
                 type: log.type,
                 value: log.value,
                 currency: log.currency,
@@ -346,6 +393,15 @@ export default {
                     }, 5000);
                     this.$router.push('/login');
                     return;
+                });
+        },
+        getEntities() {
+            axios.get('http://localhost:3000/entities')
+                .then(response => {
+                    this.entities = response.data;
+                })
+                .catch(error => {
+                    console.error(error);
                 });
         },
         openLog(log) {
