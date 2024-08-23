@@ -53,7 +53,7 @@ db.connect((err) => {
     const createUsersTableQuery = `CREATE TABLE IF NOT EXISTS users (
       idUsers INT NOT NULL AUTO_INCREMENT,
       username VARCHAR(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-      password VARCHAR(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+      password VARCHAR(40) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
       PRIMARY KEY (idUsers)
     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci`;
     const createLogTableQuery = `CREATE TABLE IF NOT EXISTS log (

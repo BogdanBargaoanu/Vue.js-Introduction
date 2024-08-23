@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 /**
  * @openapi
@@ -197,6 +198,9 @@ router.post('/addUser', function (req, res, next) {
     return;
   }
 
+  // Hash the password using MD5
+  const hashedPassword = crypto.createHash('md5').update(req.body.password).digest('hex');
+
   req.db.beginTransaction((err) => {
 
     if (err) {
@@ -214,7 +218,7 @@ router.post('/addUser', function (req, res, next) {
         return;
       }
 
-      req.db.query(insertQuery, [req.body.username, req.body.password], (err, result) => {
+      req.db.query(insertQuery, [req.body.username, hashedPassword], (err, result) => {
         if (err) {
           res.status(500).json({ success: false, error: err.message });
           return;
@@ -289,6 +293,10 @@ router.post('/addUser', function (req, res, next) {
 router.post('/login', function (req, res, next) {
   const { username, password } = req.body;
   const query = 'SELECT * FROM users WHERE username = ?';
+
+  // Hash the password using MD5
+  const hashedPassword = crypto.createHash('md5').update(password).digest('hex');
+
   req.db.query(query, [username], (err, results) => {
     if (err) {
       res.status(500).json({ success: false, message: err.message });
@@ -296,7 +304,7 @@ router.post('/login', function (req, res, next) {
     }
     if (results.length > 0) {
       const user = results[0];
-      if (user.password == password) {
+      if (user.password == hashedPassword) {
         const token = jwt.sign({ id: user.idUsers, username: username }, 'cashflow-key', { expiresIn: '24h' });
         res.json({ success: true, token: token });
       } else {
