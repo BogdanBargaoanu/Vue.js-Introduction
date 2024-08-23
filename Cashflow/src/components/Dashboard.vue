@@ -12,7 +12,7 @@
                         :aria-controls="'collapse' + log.idcashflowLog">
                         Transaction ID: {{ log.idcashflowLog }} &nbsp;<b
                             :class="{ 'text-danger': log.type == 'Expense', 'text-success': log.type == 'Income' }">{{
-                log.type }}</b>
+                                log.type }}</b>
                         &nbsp;
                         Name: {{ log.username }} Value: {{ log.value }} Currency: {{ log.currency }}
                         Date: {{ log.date }}
@@ -30,12 +30,11 @@
                                 <label class="input-group-text" :for="'username' + log.idcashflowLog">Name</label>
                             </div>
                             <select :id="'username' + log.idcashflowLog" class="name-select form-control"
-                                aria-label="Name" aria-describedby="inputGroup-sizing-default" v-model="log.idUserSelected"
-                                @change="inputChanging()">
-                                <!--<option v-for="entity in entities" :key="entity.idEntities" :value="entity.idEntities">
+                                aria-label="Name" aria-describedby="inputGroup-sizing-default"
+                                v-model="log.idUserSelected" @change="inputChanging()">
+                                <option v-for="user in users" :key="user.idUsers" :value="user.idUsers">
                                     {{
-                entity.name }}</option>
-                                -->
+                                    user.username }}</option>
                             </select>
                         </div>
 
@@ -115,10 +114,9 @@
                             </div>
                             <select id="usernameInsert" class="name-select form-control" aria-label="Name"
                                 aria-describedby="inputGroup-sizing-default" v-model="idUserInsert">
-                                <!--<option v-for="entity in entities" :key="entity.idEntities" :value="entity.idEntities">
+                                <option v-for="user in users" :key="user.idUsers" :value="user.idUsers">
                                     {{
-                entity.name }}</option>
-                                -->
+                                    user.username }}</option>
                             </select>
                         </div>
 
@@ -199,7 +197,7 @@ export default {
         return {
             cashflowLog: [],
             users: [],
-            
+
             // toast
             showToast: false,
             toastMessage: '',
@@ -248,7 +246,7 @@ export default {
                     setTimeout(() => {
                         this.showToast = false;
                     }, 5000);
-                    this.$router.push('/login');
+                    //this.$router.push('/login');
                     return;
                 });
         },
@@ -272,7 +270,7 @@ export default {
             this.dateInsert = '';
         },
         insertCashflowLog() {
-            //console.log(this.idEntityInsert, this.typeInsert, this.valueInsert, this.currencyInsert, this.dateInsert);
+            console.log(this.idUserInsert, this.typeInsert, this.valueInsert, this.currencyInsert, this.dateInsert);
             const token = localStorage.getItem('user-token'); // get the token from local storage
             if (this.idUserInsert == 0 || this.typeInsert == '' || this.valueInsert == 0 || this.currencyInsert == '' || this.dateInsert == '') {
                 this.showToast = true;

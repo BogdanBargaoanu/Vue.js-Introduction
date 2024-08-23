@@ -316,7 +316,7 @@ router.post('/updateLog/:idcashflowLog', function (req, res, next) {
         res.status(400).json({ success: false, error: 'Invalid currency' });
         return;
     }
-    const query = `UPDATE cashflowlog SET idUser = ?, idUserSelected = ?, type = ?, value = ?, currency = ?, date = ? WHERE idcashflowLog = ?`;
+    const query = `UPDATE log SET idUser = ?, idUserSelected = ?, type = ?, value = ?, currency = ?, date = ? WHERE idcashflowLog = ?`;
     req.db.query(query, [userId, idUserSelected, type, value, currency, date, idcashflowLog], (err, result) => {
         if (err) {
             res.status(500).json({ success: false, error: err.message });
@@ -373,7 +373,7 @@ module.exports = router;
  * */
 
 router.delete('/deleteLog/:idcashflowLog', function (req, res, next) {
-    const deleteQuery = 'DELETE FROM cashflowlog WHERE idcashflowLog = ?';
+    const deleteQuery = 'DELETE FROM log WHERE idcashflowLog = ?';
   
     if (!req.params.idcashflowLog) {
       res.status(400).json({ error: 'The request has missing information!' });
