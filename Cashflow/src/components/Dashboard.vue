@@ -14,7 +14,7 @@
                             :class="{ 'text-danger': log.type == 'Expense', 'text-success': log.type == 'Income' }">{{
                 log.type }}</b>
                         &nbsp;
-                        Name: {{ log.name }} Value: {{ log.value }} Currency: {{ log.currency }}
+                        Name: {{ log.username }} Value: {{ log.value }} Currency: {{ log.currency }}
                         Date: {{ log.date }}
                     </button>
                 </h2>
@@ -30,7 +30,7 @@
                                 <label class="input-group-text" :for="'username' + log.idcashflowLog">Name</label>
                             </div>
                             <select :id="'username' + log.idcashflowLog" class="name-select form-control"
-                                aria-label="Name" aria-describedby="inputGroup-sizing-default" v-model="log.idEntity"
+                                aria-label="Name" aria-describedby="inputGroup-sizing-default" v-model="log.idUserSelected"
                                 @change="inputChanging()">
                                 <!--<option v-for="entity in entities" :key="entity.idEntities" :value="entity.idEntities">
                                     {{
@@ -114,7 +114,7 @@
                                 <label class="input-group-text" for="usernameInsert">Name</label>
                             </div>
                             <select id="usernameInsert" class="name-select form-control" aria-label="Name"
-                                aria-describedby="inputGroup-sizing-default" v-model="idEntityInsert">
+                                aria-describedby="inputGroup-sizing-default" v-model="idUserInsert">
                                 <!--<option v-for="entity in entities" :key="entity.idEntities" :value="entity.idEntities">
                                     {{
                 entity.name }}</option>
@@ -198,7 +198,8 @@ export default {
     data() {
         return {
             cashflowLog: [],
-
+            users: [],
+            
             // toast
             showToast: false,
             toastMessage: '',
@@ -221,13 +222,44 @@ export default {
     },
 
     created() {
+        this.getUsers();
         //this.getCashflow();
-        //this.getEntities();
     },
     methods: {
         logout() {
             localStorage.removeItem('user-token');
             this.$router.push('/login');
+        },
+        getCashflow() {
+            const token = localStorage.getItem('user-token'); // get the token from local storage
+            axios.get('http://localhost:3000/cashflowlog', {
+                headers: {
+                    Authorization: `Bearer ${token}` // send the token in the Authorization header
+                }
+            })
+                .then(response => {
+                    this.cashflowLog = response.data;
+                })
+                .catch(error => {
+                    localStorage.removeItem('user-token');
+                    this.toastMessage = 'Invalid login: ' + error.response.data.message;
+                    this.showToast = true;
+
+                    setTimeout(() => {
+                        this.showToast = false;
+                    }, 5000);
+                    this.$router.push('/login');
+                    return;
+                });
+        },
+        getUsers() {
+            axios.get('http://localhost:3000/users')
+                .then(response => {
+                    this.users = response.data;
+                })
+                .catch(error => {
+                    console.error(error);
+                });
         },
         inputChanging() {
             this.showButton = true;
@@ -322,28 +354,6 @@ export default {
                     }, 5000);
                 });
             this.showButton = false;
-        },
-        getCashflow() {
-            const token = localStorage.getItem('user-token'); // get the token from local storage
-            axios.get('http://localhost:3000/cashflowlog', {
-                headers: {
-                    Authorization: `Bearer ${token}` // send the token in the Authorization header
-                }
-            })
-                .then(response => {
-                    this.cashflowLog = response.data;
-                })
-                .catch(error => {
-                    localStorage.removeItem('user-token');
-                    this.toastMessage = 'Invalid login: ' + error.response.data.message;
-                    this.showToast = true;
-
-                    setTimeout(() => {
-                        this.showToast = false;
-                    }, 5000);
-                    this.$router.push('/login');
-                    return;
-                });
         },
         openLog(log) {
             if (this.currentId == 0) {
