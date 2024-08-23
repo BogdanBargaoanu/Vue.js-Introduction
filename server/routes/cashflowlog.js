@@ -62,7 +62,7 @@ router.get('/', function (req, res, next) {
         return;
     }
     const query = `SELECT log.idcashflowLog, log.idUserSelected, users.username, log.type, log.value, log.currency, DATE_FORMAT(log.date, '%Y-%m-%dT%T') as date FROM log
-  INNER JOIN users ON log.idUserSelected = user.idUsers
+  INNER JOIN users ON log.idUserSelected = users.idUsers
   WHERE log.idUser = ? OR log.idUserSelected = ? ORDER BY log.date DESC;`;
     req.db.query(query, [userId,userId], (err, result) => {
         if (err) {

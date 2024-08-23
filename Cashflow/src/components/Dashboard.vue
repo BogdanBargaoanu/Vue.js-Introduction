@@ -223,7 +223,7 @@ export default {
 
     created() {
         this.getUsers();
-        //this.getCashflow();
+        this.getCashflow();
     },
     methods: {
         logout() {
@@ -282,7 +282,7 @@ export default {
                 }, 5000);
             } else {
                 axios.post("http://localhost:3000/cashflowlog/insertLog", {
-                    idUserSelected: this.idEntityInsert,
+                    idUserSelected: this.idUserInsert,
                     type: this.typeInsert,
                     value: this.valueInsert,
                     currency: this.currencyInsert,
@@ -319,7 +319,7 @@ export default {
             const token = localStorage.getItem('user-token'); // get the token from local storage
             console.log(JSON.stringify(log));
             axios.post(`http://localhost:3000/cashflowlog/updateLog/${log.idcashflowLog}`, {
-                idEntity: log.idEntity,
+                idUserSelected: log.idUserSelected,
                 type: log.type,
                 value: log.value,
                 currency: log.currency,
