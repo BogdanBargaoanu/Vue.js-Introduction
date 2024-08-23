@@ -64,7 +64,7 @@ router.get('/', function (req, res, next) {
     const query = `SELECT log.idcashflowLog, log.idUserSelected, users.username, log.type, log.value, log.currency, DATE_FORMAT(log.date, '%Y-%m-%dT%T') as date FROM log
   INNER JOIN users ON log.idUserSelected = users.idUsers
   WHERE log.idUser = ? OR log.idUserSelected = ? ORDER BY log.date DESC;`;
-    req.db.query(query, [userId,userId], (err, result) => {
+    req.db.query(query, [userId, userId], (err, result) => {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
@@ -282,7 +282,7 @@ router.post('/updateLog/:idcashflowLog', function (req, res, next) {
     if (!req.params.idcashflowLog) {
         res.status(400).json({ error: 'The request has missing information!' });
         return;
-      }
+    }
 
     const token = authHeader.split(' ')[1]; // get the token from the Authorization header
     let userId;
@@ -294,11 +294,11 @@ router.post('/updateLog/:idcashflowLog', function (req, res, next) {
         return;
     }
     const idcashflowLog = req.params.idcashflowLog,
-    idUserSelected = req.body.idUserSelected,
-    type = req.body.type,
-    value = req.body.value,
-    currency = req.body.currency,
-    date = req.body.date;
+        idUserSelected = req.body.idUserSelected,
+        type = req.body.type,
+        value = req.body.value,
+        currency = req.body.currency,
+        date = req.body.date;
     console.log(`${idcashflowLog} ${idUserSelected} ${type} ${value} ${currency} ${date}`);
     if (!idcashflowLog || !idUserSelected || !type || !value || !currency || !date) {
         res.status(400).json({ success: false, error: 'Missing required fields' });
@@ -390,26 +390,25 @@ router.delete('/deleteLog/:idcashflowLog', function (req, res, next) {
         res.status(401).json({ error: 'Invalid token' });
         return;
     }
-   
+
     const deleteQuery = 'DELETE FROM log WHERE idcashflowLog = ?';
-  
+
     if (!req.params.idcashflowLog) {
-      res.status(400).json({ error: 'The request has missing information!' });
-      return;
+        res.status(400).json({ error: 'The request has missing information!' });
+        return;
     }
-  
+
     req.db.query(deleteQuery, [req.params.idcashflowLog], (err, result) => {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
         }
-  
+
         if (result.affectedRows == 0) {
             res.status(400).json({ error: 'No cashflow log found with the provided id!' });
             return;
         }
-  
+
         res.json({ message: 'Log deleted successfully!' });
     });
-  });
-  
+});

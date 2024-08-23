@@ -89,7 +89,7 @@
 
                         <!-- DELETE BUTTON -->
                         <div class="delete-button-container">
-                            <button class="btn-delete">
+                            <button v-if="!showUpdateButton" class="btn-delete">
                                 <span class="delete-message">CONFIRM DELETE</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none"
                                     viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
@@ -332,7 +332,6 @@ export default {
         },
         updateCashflowLog(log) {
             const token = localStorage.getItem('user-token'); // get the token from local storage
-            console.log(JSON.stringify(log));
             axios.post(`http://localhost:3000/cashflowlog/updateLog/${log.idcashflowLog}`, {
                 idUserSelected: log.idUserSelected,
                 type: log.type,
@@ -415,6 +414,33 @@ export default {
             }
             this.showDeleteConfirmation = false;
         },
+        deleteLog(log) {
+            if (this.showDeleteConfirmation) {
+                const token = localStorage.getItem('user-token'); // get the token from local storage
+                axios.delete(`http://localhost:3000/cashflowlog/deleteLog/${log.idcashflowLog}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}` // send the token in the Authorization header
+                    }
+                })
+                    .then(response => {
+                        if (response.data.message) {
+                            this.showToast = true;
+                            this.toastMessage = 'Log deleted successfully';
+                            setTimeout(() => {
+                                this.showToast = false;
+                            }, 5000);
+                            this.getCashflow();
+                        }
+                    })
+                    .catch(error => {
+                        this.showToast = true;
+                        this.toastMessage = error.response.data.error;
+                        setTimeout(() => {
+                            this.showToast = false;
+                        }, 5000);
+                    });
+            }
+        }
     }
 }
 </script>
@@ -476,9 +502,9 @@ export default {
 }
 
 .delete-button-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 </style>

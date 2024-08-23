@@ -297,7 +297,7 @@ router.post('/login', function (req, res, next) {
     if (results.length > 0) {
       const user = results[0];
       if (user.password == password) {
-        const token = jwt.sign({ id: user.idUsers , username: username}, 'cashflow-key', { expiresIn: '24h' });
+        const token = jwt.sign({ id: user.idUsers, username: username }, 'cashflow-key', { expiresIn: '24h' });
         res.json({ success: true, token: token });
       } else {
         res.status(401).json({ success: false, message: 'Incorrect login details' });
