@@ -23,7 +23,7 @@ const jwt = require('jsonwebtoken');
  *                 properties:
  *                   idcashflowLog:
  *                     type: integer
- *                   name:
+ *                   username:
  *                     type: string
  *                   type:
  *                     type: string
@@ -31,11 +31,7 @@ const jwt = require('jsonwebtoken');
  *                     type: number
  *                   currency:
  *                     type: string
- *                   description:
- *                     type: string
  *                   date:
- *                    type: string
- *                   identity:
  *                    type: string
  *       401:
  *         description: Unauthorized. No authorization header or invalid token.
@@ -65,10 +61,10 @@ router.get('/', function (req, res, next) {
         res.status(401).json({ error: 'Invalid token' });
         return;
     }
-    const query = `SELECT cashflowlog.idcashflowLog, cashflowlog.idEntity, entities.name, cashflowlog.type, cashflowlog.value, cashflowlog.currency, cashflowlog.description, DATE_FORMAT(cashflowlog.date, '%Y-%m-%dT%T') as date, cashflowlog.identity FROM cashflowlog
-  INNER JOIN entities ON cashflowlog.idEntity = entities.idEntities
-  WHERE cashflowlog.idUser = ? ORDER BY cashflowlog.date DESC;`;
-    req.db.query(query, [userId], (err, result) => {
+    const query = `SELECT log.idcashflowLog, log.idUserSelected, users.username, log.type, log.value, log.currency, DATE_FORMAT(log.date, '%Y-%m-%dT%T') as date FROM log
+  INNER JOIN users ON log.idUserSelected = user.idUsers
+  WHERE log.idUser = ? OR log.idUserSelected = ? ORDER BY log.date DESC;`;
+    req.db.query(query, [userId,userId], (err, result) => {
         if (err) {
             res.status(500).json({ error: err.message });
             return;
@@ -94,7 +90,7 @@ router.get('/', function (req, res, next) {
  *           schema:
  *             type: object
  *             properties:
- *               idEntity:
+ *               idUserSelected:
  *                 type: integer
  *               type:
  *                 type: string
@@ -219,15 +215,13 @@ router.post('/insertLog', function (req, res, next) {
  *           schema:
  *             type: object
  *             properties:
- *               idEntity:
+ *               idUserSelected:
  *                 type: integer
  *               type:
  *                 type: string
  *               value:
  *                 type: number
  *               currency:
- *                 type: string
- *               description:
  *                 type: string
  *               date:
  *                 type: string
