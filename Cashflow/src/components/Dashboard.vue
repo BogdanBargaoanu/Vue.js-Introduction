@@ -198,7 +198,6 @@ export default {
     data() {
         return {
             cashflowLog: [],
-            entities: [],
 
             // toast
             showToast: false,
@@ -206,7 +205,7 @@ export default {
             showButton: false,
 
             // insert log
-            idEntityInsert: 0,
+            idUserInsert: 0,
             typeInsert: '',
             valueInsert: 0,
             currencyInsert: '',
@@ -230,14 +229,11 @@ export default {
             localStorage.removeItem('user-token');
             this.$router.push('/login');
         },
-        home() {
-            this.$router.push('/dashboard');
-        },
         inputChanging() {
             this.showButton = true;
         },
         resetInsertInfo() {
-            this.idEntityInsert = 0;
+            this.idUserInsert = 0;
             this.typeInsert = '';
             this.valueInsert = 0;
             this.currencyInsert = '';
@@ -246,7 +242,7 @@ export default {
         insertCashflowLog() {
             //console.log(this.idEntityInsert, this.typeInsert, this.valueInsert, this.currencyInsert, this.dateInsert);
             const token = localStorage.getItem('user-token'); // get the token from local storage
-            if (this.idEntityInsert == 0 || this.typeInsert == '' || this.valueInsert == 0 || this.currencyInsert == '' || this.dateInsert == '') {
+            if (this.idUserInsert == 0 || this.typeInsert == '' || this.valueInsert == 0 || this.currencyInsert == '' || this.dateInsert == '') {
                 this.showToast = true;
                 this.toastMessage = 'Please fill all fields';
                 setTimeout(() => {
@@ -254,7 +250,7 @@ export default {
                 }, 5000);
             } else {
                 axios.post("http://localhost:3000/cashflowlog/insertLog", {
-                    idEntity: this.idEntityInsert,
+                    idUserSelected: this.idEntityInsert,
                     type: this.typeInsert,
                     value: this.valueInsert,
                     currency: this.currencyInsert,
@@ -266,53 +262,7 @@ export default {
                         }
                     })
                     .then(response => {
-                        //----push the new log to the array a better variant
-                        for (const entity of this.entities) {
-                            if (entity.idEntities == this.idEntityInsert) {
-                                if (entity.isUser) {
-                                    console.log(1);
-                                    axios.get(`http://localhost:3000/users/${entity.name}`)
-                                        .then(response => {
-                                            console.log(response.data);
-                                            if (response.data[0].idUsers != null) {
-                                                let idEntityUser = response.data[0].idUsers;
-                                                let typeReverse;
-                                                if (this.typeInsert == 'Income') {
-                                                    typeReverse = 'Expense';
-                                                } else {
-                                                    typeReverse = 'Income';
-                                                }
-                                                console.log(idEntityUser, typeReverse, this.valueInsert, this.currencyInsert, this.dateInsert);
-                                                axios.post("http://localhost:3000/cashflowlog/insertLogTransfer", {
-                                                    type: typeReverse,
-                                                    value: this.valueInsert,
-                                                    currency: this.currencyInsert,
-                                                    date: this.dateInsert,
-                                                    idUser: idEntityUser,
-                                                },
-                                                    {
-                                                        headers: {
-                                                            Authorization: `Bearer ${token}` // send the token in the Authorization header
-                                                        }
-                                                    })
-                                                    .then(response => {
-                                                        if (response.data.success) {
-                                                            console.log('Transfer recorded successfully for the selected user!');
-                                                        }
-                                                    })
-                                                    .catch(error => {
-                                                        console.error(error);
-                                                    });
-                                            }
-                                        })
-                                        .catch(error => {
-                                            console.error(error);
-                                        });
-                                }
-                                break;
-                            }
-                        }
-
+                        console.log(response.data);
                         if (response.data.success) {
                             this.showToast = true;
                             this.toastMessage = 'Log inserted successfully';
@@ -393,15 +343,6 @@ export default {
                     }, 5000);
                     this.$router.push('/login');
                     return;
-                });
-        },
-        getEntities() {
-            axios.get('http://localhost:3000/entities')
-                .then(response => {
-                    this.entities = response.data;
-                })
-                .catch(error => {
-                    console.error(error);
                 });
         },
         openLog(log) {
