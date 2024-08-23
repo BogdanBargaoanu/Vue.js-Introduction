@@ -34,7 +34,7 @@
                                 v-model="log.idUserSelected" @change="inputChanging()">
                                 <option v-for="user in users" :key="user.idUsers" :value="user.idUsers">
                                     {{
-                                    user.username }}</option>
+                                        user.username }}</option>
                             </select>
                         </div>
 
@@ -86,8 +86,23 @@
                                 aria-describedby="inputGroup-sizing-default" v-model="log.date"
                                 @change="inputChanging()">
                         </div>
+
+                        <!-- DELETE BUTTON -->
+                        <div class="delete-button-container">
+                            <button class="btn-delete">
+                                <span class="delete-message">CONFIRM DELETE</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
+                                    @click="toggleDeleteConfirmation($event, log)">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- UPDATE BUTTON -->
                         <transition name="fade">
-                            <button v-if="showButton" @click="updateCashflowLog(log)"
+                            <button v-if="showUpdateButton" @click="updateCashflowLog(log)"
                                 class="btn btn-primary">Update</button>
                         </transition>
                     </div>
@@ -116,7 +131,7 @@
                                 aria-describedby="inputGroup-sizing-default" v-model="idUserInsert">
                                 <option v-for="user in users" :key="user.idUsers" :value="user.idUsers">
                                     {{
-                                    user.username }}</option>
+                                        user.username }}</option>
                             </select>
                         </div>
 
@@ -201,7 +216,7 @@ export default {
             // toast
             showToast: false,
             toastMessage: '',
-            showButton: false,
+            showUpdateButton: false,
 
             // insert log
             idUserInsert: 0,
@@ -216,6 +231,8 @@ export default {
             currentValue: 0,
             currentCurrency: '',
             currentDate: '',
+
+            showDeleteConfirmation: false,
         }
     },
 
@@ -260,7 +277,7 @@ export default {
                 });
         },
         inputChanging() {
-            this.showButton = true;
+            this.showUpdateButton = true;
         },
         resetInsertInfo() {
             this.idUserInsert = 0;
@@ -351,7 +368,7 @@ export default {
                         this.showToast = false;
                     }, 5000);
                 });
-            this.showButton = false;
+            this.showUpdateButton = false;
         },
         openLog(log) {
             if (this.currentId == 0) {
@@ -382,12 +399,22 @@ export default {
                     this.currentValue = log.value;
                     this.currentCurrency = log.currency;
                     this.currentDate = log.date;
-                    //console.log(`currentId: ${this.currentId} currentType: ${this.currentType} currentValue: ${this.currentValue} currentCurrency: ${this.currentCurrency} currentDate: ${this.currentDate}`)
                 }
             }
-            this.showButton = false;
-            //console.log(this.currentId);
-        }
+            this.showUpdateButton = false;
+            this.showDeleteConfirmation = false;
+        },
+        toggleDeleteConfirmation(event, log) {
+            if (!this.showDeleteConfirmation) {
+                event.stopPropagation();
+                this.showDeleteConfirmation = !this.showDeleteConfirmation;
+                return;
+            }
+            else {
+                this.deleteLog(log);
+            }
+            this.showDeleteConfirmation = false;
+        },
     }
 }
 </script>
@@ -446,5 +473,12 @@ export default {
     background: linear-gradient(90deg, var(--background-color3) 0%, var(--background-color2) 35%, var(--background-color1) 100%);
     z-index: 1;
     transition: opacity 0.5s ease-in-out;
+}
+
+.delete-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 </style>

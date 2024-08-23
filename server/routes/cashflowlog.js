@@ -342,6 +342,8 @@ module.exports = router;
  *         schema:
  *           type: integer
  *         required: true
+ *     security:
+ *       - BearerAuth: []
  *     responses:
  *       200:
  *         description: Log deleted successfully.
@@ -373,6 +375,22 @@ module.exports = router;
  * */
 
 router.delete('/deleteLog/:idcashflowLog', function (req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        res.status(401).json({ error: 'No authorization header' });
+        return;
+    }
+
+    const token = authHeader.split(' ')[1]; // get the token from the Authorization header
+    let userId;
+    try {
+        const decoded = jwt.verify(token, 'cashflow-key'); // verify the token
+        userId = decoded.id; // get the user ID from the decoded token
+    } catch (err) {
+        res.status(401).json({ error: 'Invalid token' });
+        return;
+    }
+   
     const deleteQuery = 'DELETE FROM log WHERE idcashflowLog = ?';
   
     if (!req.params.idcashflowLog) {
