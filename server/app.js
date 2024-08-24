@@ -16,7 +16,7 @@ app.use(cors({
   exposedHeaders: ['Authorization']
 }));
 
-// Swagger setup
+// swagger setup
 
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -35,7 +35,7 @@ const options = {
 const openapiSpecification = swaggerJsdoc(options);
 app.use('/api', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
-// MySQL setup
+// mysql setup
 const mysql = require('mysql');
 const db = mysql.createConnection({
   host: 'localhost',
@@ -91,7 +91,7 @@ db.connect((err) => {
   }
 });
 
-// Make db accessible to your routes
+// make db accessible to routes
 app.use((req, res, next) => {
   req.db = db;
   next();

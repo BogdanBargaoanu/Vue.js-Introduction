@@ -31,3 +31,7 @@ const options = {
 11. css in main.css
 
 12. register page
+
+13. dashboard page
+
+14. cashflow router
